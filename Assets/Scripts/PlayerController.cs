@@ -7,10 +7,22 @@ public class PlayerController : MonoBehaviour
 	    public float speed = 3.0f;
 	    public float friction = 17.5f;
 	    public Text scoreText;
+	    public Text healthText;
 	    // This vector is used to store the player's actual velocity
 	    private Vector3 velocity = Vector3.zero;
 	    private int score = 0;
 	    private int health = 5;
+
+	    void Start()
+	    {
+		    // https://docs.unity3d.com/ScriptReference/RuntimePlatform.html
+		    if (Application.platform != RuntimePlatform.WebGLPlayer)
+			    Debug.Log("Hey! You're not using a WebGL build. You should use the Remote to get sensor input.");
+		    else
+		    {
+			    Debug.Log("We'll write some code here later to instantiate the Sensor class.");
+		    }
+	    }
 
 	    // Update is called once per frame
 	    void Update()
@@ -64,12 +76,11 @@ public class PlayerController : MonoBehaviour
 			    Destroy(other.gameObject);
 			    ++score;
 			    SetScoreText();
-			    // Debug.Log("Score: " + score);
 		    }
 		    if (other.gameObject.CompareTag("Trap"))
 		    {
-			    health -= 1;
-			    Debug.Log("Health: " + health);
+			    --health;
+			    SetHealthText();
 		    }
 		    if (other.gameObject.CompareTag("Goal"))
 		    {
@@ -80,5 +91,10 @@ public class PlayerController : MonoBehaviour
 	    void SetScoreText()
 	    {
 		    scoreText.text = "Score: " + score;
+	    }
+
+	    void SetHealthText()
+	    {
+		    healthText.text = "Health: " + health;
 	    }
 }
