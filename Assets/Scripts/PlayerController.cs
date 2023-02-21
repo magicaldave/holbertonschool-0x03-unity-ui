@@ -72,7 +72,7 @@ public class PlayerController : MonoBehaviour
 		    }
 		    else if (other.gameObject.CompareTag("Goal"))
 		    {
-			    EndGameUI("win");
+			    EndGameUI("Win");
 		    }
 		    ResetMan();
 	    }
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
 		    }
 		    else if (health == 0)
 		    {
-			    health = score = 0;
+			    EndGameUI("Lose");
 			    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
 		    }
 	    }
@@ -105,7 +105,7 @@ public class PlayerController : MonoBehaviour
 	    // https://docs.unity3d.com/ScriptReference/Color-ctor.html
 		    string EndStateText;
 		    Color TextColor, ContainerColor;
-		    if (EndState.Equals("win"))
+		    if (EndState.Equals("Win"))
 		    {
 			    EndStateText = "You Win!";
 			    TextColor = new Color(0, 0, 0, 1);
@@ -114,9 +114,9 @@ public class PlayerController : MonoBehaviour
 		    }
 		    else
 		    {
-			    EndStateText = "You Lose!";
-			    TextColor = new Color(0, 0, 0, 1);
-			    ContainerColor = new Color(0, 1, 0, 1);
+			    EndStateText = "Game Over!";
+			    TextColor = new Color(1, 1, 1, 1);
+			    ContainerColor = new Color(1, 0, 0, 1);
 		    }
 
 		    // Start from the top and work down the hierarchy.
