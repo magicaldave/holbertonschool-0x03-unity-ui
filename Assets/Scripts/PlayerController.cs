@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 	    public float friction = 17.5f;
 	    public Text scoreText;
 	    public Text healthText;
+	    public GameObject endGameContainer;
 	    // This vector is used to store the player's actual velocity
 	    private Vector3 velocity = Vector3.zero;
 	    private int score = 0;
@@ -52,17 +53,6 @@ public class PlayerController : MonoBehaviour
 		    }
 		    transform.position += velocity * Time.deltaTime;
 
-		    if (score == 40)
-		    {
-			    Debug.Log("All Coins Collected!");
-			    score = 0;
-		    }
-		    if (health == 0)
-		    {
-			    Debug.Log("Game Over!");
-			    health = score = 0;
-			    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
-		    }
 		    // Debug.Log("Accelerometer input: " + Input.acceleration);
 		    transform.position += new Vector3(Input.acceleration.x, 0, 0);
 
@@ -74,27 +64,70 @@ public class PlayerController : MonoBehaviour
 		    if (other.gameObject.CompareTag("Pickup"))
 		    {
 			    Destroy(other.gameObject);
-			    ++score;
-			    SetScoreText();
+			    UpdateTextObj(scoreText, "Score: " + ++score);
 		    }
-		    if (other.gameObject.CompareTag("Trap"))
+		    else if (other.gameObject.CompareTag("Trap"))
 		    {
-			    --health;
-			    SetHealthText();
+			    UpdateTextObj(healthText, "Health: " + --health);
 		    }
-		    if (other.gameObject.CompareTag("Goal"))
+		    else if (other.gameObject.CompareTag("Goal"))
 		    {
-			    Debug.Log("You Win!");
+			    EndGameUI("win");
+		    }
+		    ResetMan();
+	    }
+
+	    void ResetMan()
+	    {
+		    if (score == 40)
+		    {
+			    Debug.Log("All Coins Collected!");
+			    score = 0;
+		    }
+		    else if (health == 0)
+		    {
+			    health = score = 0;
+			    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
 		    }
 	    }
 
-	    void SetScoreText()
+	    void UpdateTextObj(Component TextObj, string Value)
 	    {
-		    scoreText.text = "Score: " + score;
+		    Text UpdateObj = TextObj.GetComponent<Text>();
+		    if (UpdateObj != null)
+		    {
+			    UpdateObj.text = Value;
+		    }
 	    }
 
-	    void SetHealthText()
+	    void EndGameUI(string EndState)
 	    {
-		    healthText.text = "Health: " + health;
+	    // https://docs.unity3d.com/ScriptReference/Color-ctor.html
+		    string EndStateText;
+		    Color TextColor, ContainerColor;
+		    if (EndState.Equals("win"))
+		    {
+			    EndStateText = "You Win!";
+			    TextColor = new Color(0, 0, 0, 1);
+			    ContainerColor = new Color(0, 1, 0, 1);
+
+		    }
+		    else
+		    {
+			    EndStateText = "You Lose!";
+			    TextColor = new Color(0, 0, 0, 1);
+			    ContainerColor = new Color(0, 1, 0, 1);
+		    }
+
+		    // Start from the top and work down the hierarchy.
+		    Image endGamePrompt = endGameContainer.GetComponent<Image>();
+		    Text endGameText = endGamePrompt.GetComponentInChildren<Text>();
+		    // Update fields from bottom to top
+		    UpdateTextObj(endGameText, EndStateText);
+		    endGameText.color = TextColor;
+		    endGamePrompt.color = ContainerColor;
+		    // Fire!
+		    // https://docs.unity3d.com/ScriptReference/GameObject.SetActive.html
+		    endGameContainer.SetActive(true);
 	    }
 }
