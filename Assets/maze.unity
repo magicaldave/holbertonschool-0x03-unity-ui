@@ -9403,6 +9403,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 3
   friction: 17.5
+  scoreText: {fileID: 1485325060}
 --- !u!1 &1877993431
 GameObject:
   m_ObjectHideFlags: 0
