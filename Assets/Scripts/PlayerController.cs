@@ -1,10 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
 	    public float speed = 3.0f;
 	    public float friction = 17.5f;
+	    public Text scoreText;
 	    // This vector is used to store the player's actual velocity
 	    private Vector3 velocity = Vector3.zero;
 	    private int score = 0;
@@ -14,12 +16,10 @@ public class PlayerController : MonoBehaviour
 	    void Update()
 	    {
 		    // These should be Either 1 or -1. They're floats to support controller or gyro input.
-		    float vert = Input.GetAxis("Vertical");
-		    float horiz = Input.GetAxis("Horizontal");
 		    // This is how I check if you're actually moving.
 		    // The transform information is duplicated, with positive or negative values of 1 representing the translation direction
 		    // When magnitude is greater than zero, you pressed a button.
-		    Vector3 direction = new Vector3(horiz, 0, vert);
+		    Vector3 direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
 
 
 		    if (direction.magnitude > 0)
@@ -62,8 +62,9 @@ public class PlayerController : MonoBehaviour
 		    if (other.gameObject.CompareTag("Pickup"))
 		    {
 			    Destroy(other.gameObject);
-			    score += 1;
-			    Debug.Log("Score: " + score);
+			    ++score;
+			    SetScoreText();
+			    // Debug.Log("Score: " + score);
 		    }
 		    if (other.gameObject.CompareTag("Trap"))
 		    {
@@ -74,5 +75,10 @@ public class PlayerController : MonoBehaviour
 		    {
 			    Debug.Log("You Win!");
 		    }
+	    }
+
+	    void SetScoreText()
+	    {
+		    scoreText.text = "Score: " + score;
 	    }
 }
