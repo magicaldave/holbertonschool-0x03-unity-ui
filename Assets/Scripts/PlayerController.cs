@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -86,9 +87,16 @@ public class PlayerController : MonoBehaviour
 		    }
 		    else if (health == 0)
 		    {
+
 			    EndGameUI("Lose");
-			    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+			    StartCoroutine(LoadSceneWait(3));
 		    }
+	    }
+
+	    IEnumerator LoadSceneWait (int time)
+	    {
+		    yield return new WaitForSeconds(time);
+		    SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
 	    }
 
 	    void UpdateTextObj(Component TextObj, string Value)
