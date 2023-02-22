@@ -9717,8 +9717,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 935f452ac11afd9e1a96ee5fa96a218e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
-  friction: 17.5
+  speed: 5
+  friction: 7.5
   scoreText: {fileID: 1485325060}
   healthText: {fileID: 1554856774}
   endGameContainer: {fileID: 1020668798}
