@@ -92,37 +92,46 @@ public class PlayerController : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
+		contactMan(other);
+	}
+
+	void UpdateTextObj(Component textObject, string newValue)
+	{
+		// Checks type and value, only possible to enter this code if
+		// A text component exists!
+		if (textObject is Text isText)
+			isText.text = newValue;
+		else
+            Debug.Log("Not a text object!");
+    }
+
+	void contactMan(Collider other)
+	{
 		// Increment score when Player touches object with Pickup tag
 		// Destroy Pickup on contact
 		if (other.gameObject.CompareTag("Pickup"))
 		{
+
 			Destroy(other.gameObject);
 			UpdateTextObj(scoreText, "Score: " + ++score);
+			if (score == 40)
+			{
+				Debug.Log("All Coins Collected!");
+				score = 0;
+			}
 		}
 		else if (other.gameObject.CompareTag("Trap"))
 		{
+
 			UpdateTextObj(healthText, "Health: " + --health);
+			if (health == 0)
+			{
+				EndGameUI("Lose");
+				StartCoroutine(LoadSceneWait(3));
+			}
 		}
 		else if (other.gameObject.CompareTag("Goal"))
-		{
 			EndGameUI("Win");
-		}
-		ResetMan();
-	}
-
-	void ResetMan()
-	{
-		if (score == 40)
-		{
-			Debug.Log("All Coins Collected!");
-			score = 0;
-		}
-		else if (health == 0)
-		{
-
-			EndGameUI("Lose");
-			StartCoroutine(LoadSceneWait(3));
-		}
 	}
 
 	IEnumerator LoadSceneWait (float time = 0.0f, string sceneName = null)
@@ -135,14 +144,6 @@ public class PlayerController : MonoBehaviour
 		// Refuse to yield control to the caller until loading is finished
 		while (!asyncLoad.isDone)
 			yield return null;
-	}
-
-	void UpdateTextObj(Component textObject, string newValue)
-	{
-		// Checks type and value, only possible to enter this code if
-		// A text component exists!
-		if (textObject is Text isText)
-			isText.text = newValue;
 	}
 
 	void EndGameUI(string EndState)
