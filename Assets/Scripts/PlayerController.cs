@@ -41,6 +41,8 @@ public class PlayerController : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate()
 	{
+	    if (Input.GetButtonDown("Cancel"))
+		    StartCoroutine(LoadSceneWait(0.0f, "menu"));
 		movefunction();
 	}
 
@@ -56,11 +58,13 @@ public class PlayerController : MonoBehaviour
 	void moveMobile()
 	{
 		Vector3 tilt, force;
-		float currentTiltMagnitude, currentSpeed, tiltAcceleration, previousTiltMagnitude = 0, speedModFactor = 2.5f;
+		float currentTiltMagnitude, tiltAcceleration;
+		float previousTiltMagnitude = 0, deadzone = 0.08f, zOffset = 0.707f;
 		// Read and adjust the device angle
 		tilt = Accelerometer.current.acceleration.ReadValue();
 		tilt = Quaternion.Euler(90, 0, 0) * tilt; // Rotate the tilt vector to match the game's orientation
-		// tilt.Normalize();
+		// tilt.Normalize(); Might do something if tilt = tilt.Normalize? Seems like a dumb idea if it did work,
+		// Normalize floors to 1 or 0.
 
 
 		// Track movement between frames
@@ -69,11 +73,16 @@ public class PlayerController : MonoBehaviour
 		previousTiltMagnitude = currentTiltMagnitude;
 
 		// Apply the tilt vector as a force in the X and Z directions, while keeping the player grounded in the Y direction
-		force = new Vector3(tilt.x, 0, tilt.y - 0.707f);
+		// zOffset represents the sine of 45 degrees; this way, you can hold your phone at an angle and move instead of vertically
+		// Try it!
+		// zOffset = 0;
+		force = new Vector3(tilt.x, 0, tilt.y - zOffset);
 
-		if (force.magnitude > 0.08)
+		// This detects if input is in the deadzone; Else represents no player input
+		if (force.magnitude > deadzone)
 		{
-			currentSpeed = speed + tiltAcceleration * speedModFactor;
+			float speedModFactor = 2.5f;
+			float currentSpeed = speed + tiltAcceleration * speedModFactor;
 			rb.AddForce(force * currentSpeed);
 			rb.velocity = Vector3.ClampMagnitude(rb.velocity, 10f);
 		}
@@ -116,10 +125,12 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	IEnumerator LoadSceneWait (int time)
+	IEnumerator LoadSceneWait (float time = 0.0f, string sceneName = null)
 	{
 		yield return new WaitForSeconds(time);
-		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().name);
+		if (sceneName == null)
+			sceneName = SceneManager.GetActiveScene().name;
+		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
 
 		// Refuse to yield control to the caller until loading is finished
 		while (!asyncLoad.isDone)
@@ -144,7 +155,6 @@ public class PlayerController : MonoBehaviour
 			endStateText = "You Win!";
 			textColor = Color.black;
 			containerColor = Color.green;
-
 		}
 		else
 		{
